@@ -1,0 +1,249 @@
+{% extends "base.jinja2" %}
+
+{% block head_end %}
+<script src="{{ url_for('static', filename='js/general.js') }}"></script>
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% if current_tab is defined %}
+<script>
+    $(function(){ $("{{ current_tab }}").tab('show'); });
+
+
+
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="app-window">
+
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-pills card-header-pills"
+                            role="tablist" id="profileTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="profileInfoTab"
+                                   data-toggle="tab" href="#profileInfo"
+                                   role="tab"
+                                   aria-controls="profileInfo"
+                                   aria-selected="true">Основное</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="profileSecurityTab"
+                                   data-toggle="tab" href="#profileSecurity"
+                                   role="tab"
+                                   aria-controls="profileSecurity"
+                                   aria-selected="false">Безопасность</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="profileTabsContent">
+                            <div class="tab-pane fade show active"
+                                 id="profileInfo"
+                                 role="tabpanel"
+                                 aria-labelledby="profileInfoTab">
+                                <!-- info_form -->
+                                <form action="" enctype="multipart/form-data"
+                                      method="post"
+                                      novalidate>
+                                    {{ info_form.hidden_tag() }}
+                                    <div class="form-group mb-3">
+                                        <label for="userID">ID</label>
+                                        <input class="form-control" id="userID"
+                                               readonly type="text"
+                                               value="{{ current_user.user_id }}">
+                                    </div>
+                                    {% for field in [info_form.first_name,
+                                    info_form.second_name,
+                                    info_form.phone_number,
+                                    info_form.age,
+                                    info_form.city,
+                                    info_form.additional_inf] %}
+                                    <div class="form-group">
+                                        {{ field.label }}
+                                        {{ field(class="form-control
+                                        profile-info-field"
+                                        + ("
+                                        is-invalid" if field.errors else ""),
+                                        readonly=not bool(info_form.errors)) }}
+                                        {% for error in field.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ translate_wtforms_error(error) }}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                    <div class="form-group">
+                                        <div class="mb-3">Аватар</div>
+                                        <img src="{{ url_for('upload.uploaded_file', filename=current_user.avatar or '') }}"
+                                             class="rounded-circle mb-3 profile-avatar-img"
+                                             id="profileAvatarImg">
+                                        <div class="custom-file"
+                                             id="profileAvatarFileField"
+                                             style="{{ 'display: none;' if not info_form.errors else '' }}">
+                                            {% set field = info_form.avatar %}
+                                            {{ field(class="custom-file-input
+                                            profile-info-file-field" +
+                                            (" is-invalid" if field.errors else
+                                            ""))
+                                            }}
+                                            <label for="{{ field.id }}"
+                                                   class="custom-file-label">Выберите
+                                                файл...</label>
+                                            {% for error in field.errors %}
+                                            <div class="invalid-feedback">
+                                                {{
+                                                translate_wtforms_error(error)
+                                                }}
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+
+                                    </div>
+                                    <div class="profile-info-form-buttons form-group d-flex justify-content-end">
+                                        {{ info_form.submit(class="btn
+                                        green-btn",
+                                        style="display: none;" if not
+                                        info_form.errors
+                                        else "",
+                                        role="button") }}
+                                        <button type="button"
+                                                class="btn btn-secondary"
+                                                id="profileChangeInfoBtn"
+                                                style="{{ 'display: none;' if info_form.errors else '' }}">
+                                            Изменить
+                                        </button>
+                                    </div>
+                                    {% if info_error_msg %}
+                                    <div class="alert alert-danger"
+                                         role="alert">
+                                        {{ info_error_msg }}
+                                    </div>
+                                    {% endif %}
+                                    {% if info_success_msg %}
+                                    <div class="alert alert-success"
+                                         role="alert">
+                                        {{ info_success_msg }}
+                                    </div>
+                                    {% endif %}
+                                </form>
+                            </div>
+                            <div class="tab-pane fade" id="profileSecurity"
+                                 role="tabpanel"
+                                 aria-labelledby="profileSecurityTab">
+                                <!-- security_form -->
+                                <form action="" method="post" novalidate>
+                                    {{ security_form.hidden_tag() }}
+                                    <div class="form-group">
+                                        {% set field =
+                                        security_form.old_password %}
+                                        {{ field.label }}
+                                        {{ field(class="form-control
+                                        profile-security-field"
+                                        + ("
+                                        is-invalid" if field.errors else ""),
+                                        readonly=not bool(security_form.errors))
+                                        }}
+                                        <small id="{{ field.id }}Help"
+                                               class="form-text text-muted">
+                                            Чтобы поменять пароль или email,
+                                            необходимо ввести свой текущий
+                                            пароль
+                                        </small>
+                                        {% for error in field.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ translate_wtforms_error(error) }}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group">
+                                        {% set field = security_form.email %}
+                                        {{ field.label }}
+                                        {{ field(class="form-control
+                                        profile-security-field"
+                                        + ("
+                                        is-invalid" if field.errors else ""),
+                                        readonly=not bool(security_form.errors))
+                                        }}
+                                        {% for error in field.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ translate_wtforms_error(error) }}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {% set field = security_form.password %}
+                                        {{ field.label }}
+                                        {{ field(class="form-control
+                                        profile-security-field"
+                                        + ("
+                                        is-invalid" if field.errors else ""),
+                                        readonly=not bool(security_form.errors),
+                                        autocomplete="off")
+                                        }}
+                                        {% for error in field.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ translate_wtforms_error(error) }}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group">
+                                        {% set field =
+                                        security_form.repeat_password
+                                        %}
+                                        {{ field.label }}
+                                        {{ field(class="form-control
+                                        profile-security-field"
+                                        + ("
+                                        is-invalid" if field.errors else ""),
+                                        readonly=not bool(security_form.errors),
+                                        autocomplete="off")
+                                        }}
+                                        {% for error in field.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ translate_wtforms_error(error) }}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="profile-security-form-buttons form-group d-flex justify-content-end">
+                                        {{ security_form.submit(class="btn
+                                        green-btn",
+                                        style="display: none;" if not
+                                        security_form.errors
+                                        else "",
+                                        role="button") }}
+                                        <button type="button"
+                                                class="btn btn-secondary"
+                                                id="profileChangeSecurityBtn"
+                                                style="{{ 'display: none;' if security_form.errors else '' }}">
+                                            Изменить
+                                        </button>
+                                    </div>
+                                    {% if security_error_msg %}
+                                    <div class="alert alert-danger"
+                                         role="alert">
+                                        {{ security_error_msg }}
+                                    </div>
+                                    {% endif %}
+                                    {% if security_success_msg %}
+                                    <div class="alert alert-success"
+                                         role="alert">
+                                        {{ security_success_msg }}
+                                    </div>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

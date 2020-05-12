@@ -1,0 +1,67 @@
+{% extends "base.jinja2" %}
+
+{% set hide_user = True %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="login-form-wrapper white-plate">
+                <p class="login-form-header">Войти в PyMessages</p>
+                <form action="" method="post" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="form-group w-100">
+                        {% set field = form.email %}
+                        {{ field(class="form-control" + (" is-invalid" if
+                        field.errors else ""), placeholder=field.label_name) }}
+                        {% for error in field.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group w-100">
+                        {% set field = form.password %}
+                        {{ field(class="form-control" + (" is-invalid" if
+                        field.errors else ""), placeholder=field.label_name) }}
+                        {% for error in field.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% for error in form.password.errors %}
+                    {% endfor %}
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            {{ form.remember_me(class="custom-control-input") }}
+                            {{
+                            form.remember_me.label(class="custom-control-label")
+                            }}
+                        </div>
+                    </div>
+                    {% if error_msg %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_msg }}
+                    </div>
+                    {% endif %}
+                    {{ form.submit(type="submit", class="btn
+                    login-form-sign-in-btn green-btn w-100",
+                    role="button") }}
+                </form>
+                <div class="text-center">
+                    <!-- TODO Реализовать смену забытого пароля -->
+                    <a class="login-form-forgot-password login-form-link"
+                       href="#" title="Очень жаль">Забыли пароль?</a>
+                    &#183;
+                    <a class="login-form-create-account login-form-link"
+                       href="{{ url_for('main.register') }}">Зарегистрироваться
+                        в PyMessages</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

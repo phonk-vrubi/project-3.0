@@ -1,0 +1,43 @@
+{% macro friend(type) %}
+
+<li class="card mb-2 friends-friend-card" data-user-id="{friend_id}">
+    <div class="card-body">
+        <div class="media">
+            <img src="{avatar}" class="mr-3 friends-friend-avatar rounded-circle">
+            <div class="media-body d-flex justify-content-between">
+                <div class="friends-friend-description">
+                    <h5 class="mt-0 mb-1">{friend_name}</h5>
+                </div>
+                <div class="friends-friend-actions">
+                    {% if type == 'friend' %}
+                    <button type="button"
+                            class="btn btn-danger friends-delete-friend-btn"
+                            data-user-id="{friend_id}">
+                        Удалить
+                    </button>
+                    {% elif type in ['request', 'denied', 'new'] %}
+                    <button type="button"
+                            class="btn btn-primary friends-add-friend-btn"
+                            data-user-id="{friend_id}">
+                        Добавить
+                    </button>
+                    {% endif %}
+                    {% if type == 'request' %}
+                    <button type="button"
+                            class="btn btn-secondary friends-deny-friend-btn"
+                            data-user-id="{friend_id}">
+                        Отклонить
+                    </button>
+                    {% elif type == 'outgoing' %}
+                    <button type="button"
+                            class="btn btn-secondary friends-cancel-request-btn"
+                            data-user-id="{friend_id}">
+                        Отменить
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</li>
+{% endmacro %}

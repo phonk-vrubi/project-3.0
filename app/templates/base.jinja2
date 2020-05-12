@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    {% block head %}{% endblock %}
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script
+            src="https://code.jquery.com/jquery-3.5.0.min.js"
+            integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/x-icon"
+          href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <script type="text/javascript">
+        var csrfToken = "{{ csrf_token() }}";
+        var refreshTime = ({{ current_app.config['JWT_ACCESS_TOKEN_EXPIRES'] }} - 5 * 60) * 1000;
+
+        // const apiServerURL = new URL("{{ current_app.config['API_SERVER'] }}");
+        // TODO Поменять код ниже, если API сервер изменится
+        const apiServerURL = new URL(window.location.origin);
+
+        const uploadsURL = new URL(
+            "{{ url_for('upload.uploaded_file', filename='') }}",
+            apiServerURL
+        );
+
+        {% if current_user %}
+        var currentUserID = "{{ current_user.user_id }}";
+        {% else %}
+        var currentUserID = null;
+        {% endif %}
+    </script>
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+    <title>{{ title }}</title>
+    {% block head_end %}{% endblock %}
+</head>
+<body>
+{% block body %}{% endblock %}
+<header class="page-header sticky-top">
+    <div class="container">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-auto">
+                <a class="page-header-logo-and-name"
+                   href="{{ url_for('main.index') }}">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}"
+                         alt="" class="page-header-logo rounded-circle">
+                    <span class="page-header-app-name d-md-block d-none">PyMessages</span>
+                </a>
+            </div>
+            {% if not hide_user and current_user %}
+            <div class="col-auto">
+                <div class="page-header-user d-flex align-items-center">
+                    <!--                    <span class="badge badge-pill badge-light mr-2">5</span>-->
+                    <div class="dropdown">
+                        <a class="page-header-user-first-name dropdown-toggle mr-2"
+                           href="#" role="button" id="pageHeaderUserDropdown"
+                           data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false">
+                            {{ current_user.first_name }}
+                            {{ current_user.second_name }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right"
+                             aria-labelledby="pageHeaderUserDropdown">
+                            <a class="dropdown-item"
+                               href="{{ url_for('main.index') }}">Чаты</a>
+                            <a class="dropdown-item"
+                               href="{{ url_for('main.friends') }}">Друзья</a>
+                            <a class="dropdown-item"
+                               href="{{ url_for('main.profile') }}">Редактировать
+                                профиль</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="{{ url_for('main.logout') }}">Выйти</a>
+                        </div>
+                    </div>
+                    <img alt=""
+                         src="{{ url_for('upload.uploaded_file', filename=current_user.avatar or '') }}"
+                         class="page-header-user-avatar rounded-circle">
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</header>
+<main class="page-main">
+    {% block content %}{% endblock %}
+</main>
+<footer class="page-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="page-footer-nav-block">
+                    <div class="page-footer-languages-wrapper">
+                        <!-- TODO Удалить или доделать
+                        Блок смены текста. Навряд ли успеем
+                        реализовать эту самую смену, так что позже лучше
+                        его закомментировать -->
+                        <ul class="page-footer-languages-list page-footer-links">
+                            <li class="page-footer-link-elem">
+                                <a href="#" class="page-footer-link">Русский</a>
+                            </li>
+                            <li class="page-footer-link-elem">
+                                <a href="#" class="page-footer-link">Тоже
+                                    русский</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <hr class="page-footer-languages-hr-links">
+                    <div class="page-footer-links-wrapper">
+                        <nav>
+                            <ul class="page-footer-nav-links-list page-footer-links">
+                                {% for title, link in
+                                constants.PAGE_NAV_LINKS.items() %}
+                                <li class="page-footer-link-elem">
+                                    <a href="{{ url_for(link) }}"
+                                       class="page-footer-link">{{ title }}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div class="page-footer-app-name">
+                    PyMessages, 2020<br>
+                    <a href="https://github.com/bogdan-nikitin/webserver-api-project-2020-yl-2">
+                        Github
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+{% block body_end %}{% endblock %}
+</body>
+</html>

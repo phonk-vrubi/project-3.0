@@ -1,0 +1,137 @@
+{% from "friends_friend.jinja2" import friend %}
+
+{% extends "base.jinja2" %}
+
+{% block head %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
+      rel="stylesheet" crossorigin="anonymous">
+{% endblock %}
+
+{% block head_end %}
+<script src="{{ url_for('static', filename='js/general.js') }}"></script>
+<script src="{{ url_for('static', filename='js/friends.js') }}"></script>
+<script>
+    var friendHTML = `{{ friend('friend') }}`;
+    var friendRequestHTML = `{{ friend('request') }}`;
+    var friendDeniedHTML = `{{ friend('denied') }}`;
+    var friendNewHTML = `{{ friend('new') }}`;
+    var friendOutgoingHTML = `{{ friend('outgoing') }}`;
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="app-window">
+
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-pills card-header-pills"
+                            role="tablist" id="profileTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active"
+                                   id="friendsFriendsTab"
+                                   data-toggle="tab" href="#friendsFriends"
+                                   role="tab"
+                                   aria-controls="friendsFriends"
+                                   aria-selected="true">Друзья</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="friendsRequestsTab"
+                                   data-toggle="tab" href="#friendsRequests"
+                                   role="tab"
+                                   aria-controls="friendsRequests"
+                                   aria-selected="false">Новые</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="friendsDeniedTab"
+                                   data-toggle="tab" href="#friendsDenied"
+                                   role="tab"
+                                   aria-controls="friendsDenied"
+                                   aria-selected="false">Отклонённые</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="friendsOutgoingTab"
+                                   data-toggle="tab" href="#friendsOutgoing"
+                                   role="tab"
+                                   aria-controls="friendsOutgoing"
+                                   aria-selected="false">Исходящие</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="friendsSearchTab"
+                                   data-toggle="tab" href="#friendsSearch"
+                                   role="tab"
+                                   aria-controls="friendsSearch"
+                                   aria-selected="false">Поиск</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="profileTabsContent">
+                            <div class="tab-pane fade show active"
+                                 id="friendsFriends"
+                                 role="tabpanel"
+                                 aria-labelledby="friendsFriendsTab">
+                                <!-- friends -->
+                                <ul class="list-unstyled"
+                                    id="friendsFriendsList"></ul>
+                            </div>
+                            <div class="tab-pane fade" id="friendsRequests"
+                                 role="tabpanel"
+                                 aria-labelledby="friendsRequestsTab">
+                                <!-- requests -->
+                                <ul class="list-unstyled"
+                                    id="friendsRequestsList"></ul>
+                            </div>
+                            <div class="tab-pane fade" id="friendsDenied"
+                                 role="tabpanel"
+                                 aria-labelledby="friendsDeniedTab">
+                                <!-- denied -->
+                                <ul class="list-unstyled"
+                                    id="friendsDeniedList"></ul>
+                            </div>
+                            <div class="tab-pane fade show"
+                                 id="friendsOutgoing"
+                                 role="tabpanel"
+                                 aria-labelledby="friendsOutgoingTab">
+                                <!-- outgoing -->
+                                <ul class="list-unstyled"
+                                    id="friendsOutgoingList"></ul>
+                            </div>
+                            <div class="tab-pane fade" id="friendsSearch"
+                                 role="tabpanel"
+                                 aria-labelledby="friendsSearch">
+                                <!-- search -->
+                                <div class="d-flex align-items-center">
+                                    <form action="#" role="search"
+                                          onsubmit="return false;"
+                                          class="w-100 mb-3"
+                                          id="friendsSearchForm">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fas fa-search"></i>
+                                                </div>
+                                            </div>
+                                            <input type="search"
+                                                   class="form-control"
+                                                   id="friendsSearchInput"
+                                                   placeholder="Введите имя или ID пользователя"
+                                                   autocomplete="off">
+                                        </div>
+                                    </form>
+                                </div>
+                                <ul class="list-unstyled"
+                                    id="friendsSearchList"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

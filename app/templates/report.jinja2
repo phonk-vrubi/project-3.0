@@ -1,0 +1,14 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="report-block white-plate">
+                {% block report_content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

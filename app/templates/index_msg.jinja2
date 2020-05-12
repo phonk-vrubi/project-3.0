@@ -1,0 +1,11 @@
+{% macro message(author) %}
+{% if author == 'user' %}
+<div class="index-user-message index-chat-message balloon-right">
+    {text}
+</div>
+{% elif author == 'interlocutor' %}
+<div class="index-interlocutor-message index-chat-message balloon-left">
+    {text}
+</div>
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,451 @@
+/* ВСЕ СТИЛИ ПИШУТСЯ В ФАЙЛЕ app/sass/style.scss
+ЗАТЕМ ЭТОТ ФАЙЛ КОМПИЛИРУЕТСЯ В app/static/css/style.css
+ВСЕ ИЗМЕНЕНИЯ, ВНЕСЁННЫЕ В ФАЙЛ app/static/css/style.css БУДУТ СТЁРТЫ */
+
+/* Подключаем Bootstrap 
+(подключаем исходники, дабы иметь возможность использовать миксины, менять
+глобальные переменные и использовать другие плюшки) */
+
+@import "../bootstrap/scss/bootstrap";
+
+// Константы
+
+// Фирменный зелёный: $py_green
+$py_green: #008B3C;
+// Высота шапки с поиском и собеседником на index.jinja2
+$index_messages_header_height: 60px;
+// Расстояние от края сообщения до края чата на index.jinja2
+$index_distance_from_edge_to_msg: 20px;
+
+$index_additions_padding: 20px;
+$index_additions_photo_height: 256px;
+
+$index_photo_addition_item_mb: 10px;
+
+$app_window_mt: 50px;
+$app_window_mb: 30px;
+
+
+
+/* Общие стили */
+
+:root{
+    // Создаём CSS переменные из SASS переменных Bootstrap'а, чтобы
+    // воспользоваться ими из JS
+    @each $size, $value in $grid-breakpoints{
+        --grid-breakpoints-#{$size}: #{$value};
+    }
+}
+
+.no-focus-btn {
+    &:focus, &:active{
+        outline: none !important;
+        box-shadow: none;
+    }
+}
+
+.green-btn{
+    background-color: #00A748;
+    color: white;
+}
+.green-btn:hover{
+    background-color: $py_green;
+    color: white;
+}
+.white-plate{
+    background-color: white;
+}
+
+.balloon-left, .balloon-right{
+    word-break: break-word;
+    display:block;
+    position:relative;
+    width:60%; height:auto;
+    background: #fff;
+    padding: 10px 25px;
+    border-radius: 20px;
+}
+.balloon-left:before{
+    content: ' ';
+    position: absolute;
+    left: -1.4%; top: 50%; margin-top: -8px;
+    display: block;
+    width: 0px;
+    height: 0px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #fff;
+}
+.balloon-right:after{
+    content: ' ';
+    position: absolute; left: 99.6%; top: 50%; margin-top: -10px;
+    display: block;
+    width: 0px;
+    height: 0px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #fff;
+}
+.app-window{
+    margin-top: $app_window_mt;
+    margin-bottom: $app_window_mb;
+}
+
+
+
+/* base.jinja2 */
+
+.page-header-logo{
+    width: 35px;
+    border: 2px solid white;
+}
+.page-header-app-name{
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+    &:hover{
+        color: white;
+        text-decoration: none;
+    }
+}
+.page-header-logo-and-name{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    *:not(:last-child){
+        margin-right: 5px;
+    }
+    @media (max-width: 381px){
+        display: none;
+    }
+    &:hover{
+        text-decoration: none;
+    }
+}
+.page-header{
+    z-index: 1050;
+    height: 45px;
+    background-color: #00A748;
+    display: flex;
+    align-items: center;
+}
+.page-header-user-avatar{
+    $side_size: 35px;
+    width: $side_size;
+    height: $side_size;
+}
+.page-header-user-first-name{
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+}
+.page-header-user-first-name:hover{
+    color: white;
+    text-decoration: none;
+}
+
+.page-main{
+    background-color: #F0F1F3;
+}
+
+.page-footer{
+    padding-top: 15px;
+    padding-bottom: 45px;
+}
+.page-footer-links{
+    margin: 0;
+    padding: 0 15px;
+}
+.page-footer-languages-hr-links{
+    margin: 5px auto;
+}
+.page-footer-link-elem{
+    display: inline;
+    font-size: 12px;
+}
+.page-footer-link{
+    color: #51ACFF;
+}
+.page-footer-app-name{
+    $text_color: lightgray;
+    color: $text_color;
+    padding: 0 15px;
+    font-size: 12px;
+    & *{
+        &, &:hover{
+            color: $text_color;
+        }
+
+    }
+}
+.page-footer-nav-block{
+    margin-bottom: 10px;
+}
+.page-footer-links .page-footer-link-elem:not(:last-child){
+    margin-right: 6px;
+}
+
+
+
+/* login.jinja2 */
+
+.login-form-wrapper{
+    margin: 140px auto;
+    max-width: 400px;
+    padding: 30px 15px;
+}
+.login-form-header{
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 18px;
+}
+.login-form-sign-in-btn{
+    margin-bottom: 10px;
+}
+.login-form-link{
+    font-size: 15px;
+}
+
+
+
+/* register.jinja2 */
+
+.register-form-wrapper{
+    margin: 140px auto;
+    max-width: 400px;
+    padding: 30px 15px;
+}
+.register-form-header{
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 18px;
+}
+.register-form-sign-up-btn{
+    margin-top: 20px;
+    margin-bottom: 5px;
+    height: 45px;
+}
+
+
+
+/* report.jinja2 */
+
+.report-block{
+    text-align: center;
+    padding: 30px 15px;
+    margin: 140px auto;
+    max-width: 800px;
+    font-size: 20px;
+}
+
+
+
+/* verify_email.jinja2 */
+
+
+
+/* email_verified.jinja2 */
+
+
+
+/* index.jinja2 */
+
+.index-messages-block{
+    background-color: white;
+    height: calc(
+        98vh - #{$index_messages_header_height} - #{$app_window_mt}
+    );
+}
+.index-chats-block{
+    background-color: #E3E4E6;
+}
+.index-chats-list{
+    overflow: auto;
+    height: calc(100% - #{$index_messages_header_height});
+}
+.index-messages-header{
+    box-sizing: border-box;
+    height: $index_messages_header_height;
+}
+.index-chats-search-block{
+    padding-left: 10px; padding-right: 10px;
+    background-color: #D7D8DA;
+}
+.index-chats-chat-user-info{
+    width: 60%;
+}
+.index-chats-chat-user-avatar{
+    $side_size: 35px;
+    width: $side_size;
+    height: $side_size;
+}
+.index-current-chat-messages-list{
+    overflow: auto;
+}
+.index-input-message-text-block{
+    padding: 10px 5px;
+    background-color: #E3E4E6;
+}
+.index-message-input{
+    max-height: 200px;
+    overflow: auto;
+}
+.index-addition-icon{
+    font-size: 20px;
+    text-align: center;
+    width: 25px;
+}
+.index-message-addition-btn{
+    /* Внутренние отступы подобраны на глаз */
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+}
+.index-current-chat-header{
+    font-size: 18px;
+    padding: 0 15px;
+    background-color: #e6e6e6;
+}
+.index-current-chat-user-avatar{
+    min-height: 0;
+    $side_size: 35px;
+    width: $side_size; height: $side_size;
+    @media (max-width: 255px){
+        display: none;
+    }
+}
+.index-current-chat-user-name{
+    font-weight: 500;
+    &:hover{
+        text-decoration: none;
+    }
+}
+.index-chat-message{
+    margin-bottom: 20px;
+    $y_margin: 40px;
+    &:first-child{
+        margin-top: $y_margin;
+    }
+    &:last-child{
+        margin-bottom: $y_margin;
+    }
+}
+.index-user-message{
+    $msg_color: $py_green;
+    margin-left: auto;
+    margin-right: $index_distance_from_edge_to_msg;
+    color: white;
+    background-color: $msg_color;
+    &:after{
+        border-left-color: $msg_color;
+    }
+}
+.index-interlocutor-message{
+    $msg_color: #efefef;
+    margin-right: auto;
+    margin-left: $index_distance_from_edge_to_msg;
+    background-color: $msg_color;
+    &:before{
+        border-right-color: $msg_color;
+    }
+}
+.index-chat-back-btn{
+    font-size: 1.5rem;
+}
+.index-stickers-block{
+    background-color: #cacaca;
+    padding: 10px 20px;
+    overflow-x: auto;
+}
+.index-choice-sticker-img{
+    $side_size: 128px;
+    width: $side_size;
+    height: $side_size;
+}
+.index-stickers-list{
+    padding: 0;
+    width: 100%;
+    list-style-type: none;
+    padding-top: 35px;
+}
+.index-choice-sticker:not(:last-child){
+    margin-right: 20px;
+}
+.index-addition-field{
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+}
+.index-photo-addition-item{
+    &:hover{
+        %index-photo-addition-item-transition{
+            transition: .1s ease-in-out;
+        }
+        .index-photo-addition{
+            @extend %index-photo-addition-item-transition;
+            filter: brightness(60%);
+        }
+        .index-photo-remove-btn{
+            @extend %index-photo-addition-item-transition;
+            opacity: 100%;
+        }
+    }
+    &:not(:last-child){
+        margin-right: 20px;
+    }
+    margin-bottom: $index_photo_addition_item_mb;
+}
+.index-photo-addition{
+    height: $index_additions_photo_height;
+    border-radius: 20px;
+}
+.index-additions-block{
+    max-height: $index_additions_photo_height + $index_additions_padding * 2;
+    overflow: auto;
+    background-color: #ababab;
+    /* Приходится выставлять внутренние отступы через внешние дочерних
+    элементов, т.к. если просто выставить внутренние отступы, то элемент будет
+    виден даже при условии, что он пустой. */
+    & > *{
+        &:empty{
+            display: none!important;
+        }
+        &:not(:empty){
+            margin: $index_additions_padding;
+        }
+    }
+}
+.index-additions-photo-list{
+    margin-bottom: $index_additions_padding -
+        $index_photo_addition_item_mb!important;
+    &:not(:empty) ~ :not(:empty){
+        margin-top: 0;
+    }
+}
+.index-photo-remove-btn{
+    opacity: 0;
+    font-size: 35px;
+}
+.index-addition-remove-btn{
+    width: 1.5rem;
+}
+
+
+
+/* profile.jinja2 */
+
+.profile-avatar-img{
+    $side_size: 120px;
+    width: $side_size;
+    height: $side_size;
+}
+
+
+/* friends.jinja2 */
+
+.friends-friend-avatar{
+    $side_size: 60px;
+    width: $side_size;
+    height: $side_size;
+}
+
+// CSS - боль...

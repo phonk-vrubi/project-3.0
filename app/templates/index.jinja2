@@ -1,0 +1,200 @@
+{% from "index_msg.jinja2" import message %}
+
+{% extends "base.jinja2" %}
+
+{% block head %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+        integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I="
+        crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/ResizeSensor.js') }}"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
+      rel="stylesheet" crossorigin="anonymous">
+{% endblock %}
+
+{% block head_end %}
+<script src="{{ url_for('static', filename='js/general.js') }}"></script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script>
+    var chatHTML = `{% include "index_chat.jinja2" %}`;
+    var photoAdditionHTML = `{% include "index_photo_addition.jinja2" %}`;
+    var additionHTML = `{% include "index_addition.jinja2" %}`;
+    var userMsgHTML = `{{ message('user') }}`;
+    var interlocutorMsgHTML = `{{ message('interlocutor') }}`;
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Модальное окно с просьбой ожидания конца загрузки. На данный момент не
+используется, т.к. при попытке его закрыть динамически, сделать этого не
+удаётся -->
+<div class="modal fade" id="indexAdditionLoadingModal" tabindex="-1"
+     role="dialog"
+     aria-labelledby="exampleModalLabel" aria-hidden="true"
+     data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content p-5">
+            <div class="modal-body">
+                <div class="d-flex justify-content-center mb-3">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Загрузка...</span>
+                    </div>
+                </div>
+                <div class="text-center">
+                    Пожалуйста, дождитесь загрузки файлов...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container overflow-hidden">
+    <div class="row index-messages-block app-window no-gutters">
+        <!-- Раздел с поиском и списком чатов -->
+        <div class="col-lg-3 col-12 index-chats-block h-100 d-lg-block"
+             id="indexChatsBlock">
+            <div class="index-chats-search-block index-messages-header sticky-top d-flex align-items-center">
+                <form action="#" role="search" onsubmit="return false;"
+                      class="w-100" id="indexSearchForm">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control"
+                               id="indexChatsAndFriendsSearchInput"
+                               placeholder="Поиск" autocomplete="off">
+                    </div>
+                </form>
+            </div>
+            <div class="index-chats-list" id="indexChatsList">
+                <div class="list-group" id="indexMessagesChatsListGroup"
+                     role="tablist">
+                </div>
+            </div>
+
+        </div>
+        <!-- Раздел с текущим чатом -->
+        <div class="col-lg-9 col-12 index-current-chat-block position-relative h-100 d-none d-lg-block"
+             id="indexCurrentChatBlock">
+            <div class="index-current-chat-header index-messages-header fixed-bottom position-relative d-flex align-items-center justify-content-between">
+                <button class="btn index-chat-back-btn text-bold no-focus-btn d-block d-lg-none"
+                        id="indexChatBackBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="index-current-chat-interlocutor d-flex align-items-centers justify-content-start">
+                    <img src="static/img/logo.png"
+                         class="index-current-chat-user-avatar rounded-circle mr-2" id="indexCurrentChatUserAvatar">
+                    <div class="index-current-chat-user-info d-flex align-items-center">
+                        <a class="index-current-chat-user-name text-dark"
+                           href="/#" id="indexChatHeaderUserName"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="index-current-chat-messages-list"
+                 id="indexCurrentChatMessagesList">
+            </div>
+            <div class="index-input-message-block fixed-bottom position-absolute"
+                 id="indexMessageBlock">
+
+                <div class="index-stickers-block d-none"
+                     id="indexStickersBlock">
+                    <small class="font-weight-bold text-secondary position-absolute">Стикеры</small>
+                    <ul class="index-stickers-list d-flex">
+                        {% for i in range(20) %}
+                        <li class="index-choice-sticker">
+                            <a href="/#">
+                                <img src="static/img/logo.png"
+                                     class="index-choice-sticker-img">
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="index-input-message-text-block d-flex">
+                    <div class="index-attach-addition btn dropup align-self-end p-0">
+                        <button class="btn index-message-addition-btn no-focus-btn"
+                                type="button"
+                                id="indexAttachStickerBtn">
+                            <i class="far fa-smile index-addition-icon"></i>
+                        </button>
+                    </div>
+
+                    <div class="input-group align-self-end">
+                        <div class="form-control h-auto index-message-input"
+                             aria-label="Введите текст сообщения..."
+                             contenteditable="true" role="textbox"
+                             id="indexMessageInput"></div>
+                    </div>
+
+                    <div class="index-attach-addition btn dropup align-self-end p-0">
+                        <button class="btn index-message-addition-btn no-focus-btn"
+                                type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-paperclip index-addition-icon"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <!-- Возможно, это было бы лучше сделать циклом  -->
+
+                            <a class="dropdown-item" href="#">
+                                <input type="file" id="indexAudioAddition"
+                                       class="index-addition-field"
+                                       multiple title=""
+                                       name="indexAudioAddition"
+                                       data-base-id="indexAudioAddition"
+                                       accept="{{ constants.ALLOWED_AUDIO_EXTENSIONS_HTML }}">
+                                <i class="fas fa-music index-addition-icon mr-1"></i>
+                                Аудио
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <input type="file" id="indexFileAddition"
+                                       class="index-addition-field"
+                                       multiple title=""
+                                       name="indexFileAddition"
+                                       data-base-id="indexFileAddition">
+                                <i class="fas fa-file index-addition-icon mr-1"></i>
+                                Файл
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <input type="file" id="indexVideoAddition"
+                                       class="index-addition-field"
+                                       multiple title=""
+                                       name="indexVideoAddition"
+                                       data-base-id="indexVideoAddition"
+                                       accept="{{ constants.ALLOWED_VIDEO_EXTENSIONS_HTML }}">
+                                <i class="fas fa-film index-addition-icon mr-1"></i>
+                                Видео
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <input type="file" id="indexPhotoAddition"
+                                       class="index-addition-field"
+                                       multiple title=""
+                                       name="indexPhotoAddition"
+                                       accept="{{ constants.ALLOWED_PHOTO_EXTENSIONS_HTML }}"
+                                       data-base-id="indexPhotoAddition">
+                                <i class="far fa-image index-addition-icon mr-1"></i>
+                                Фотография
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="index-additions-block" id="indexAdditionsBlock">
+                    <!-- Эти два элемента должны быть полностью пустыми (они не
+                    должны содержать даже пробелов или переносов строк), иначе
+                    блок с приложениями будет отображаться, даже если к
+                    сообщению ничего не прикрепили. -->
+                    <div class="index-additions-photo-list"
+                         id="indexAdditionsPhotoList"></div>
+                    <div class="index-additions-list"
+                         id="indexAdditionsList"></div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!-- Я так давно не видел Python-кода... Я верстаю эту страничку уже около  -->
+<!-- недели или более... Зря я решился так заморачиваться над оформлением  -->
+<!-- (хотя выглядит она довольно приятно) -->
